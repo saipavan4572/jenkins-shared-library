@@ -1,6 +1,6 @@
 def call(Map configMap){    // call() will work like main() method in java
     // keep/place the complete pipeline code here: backend-jenkins-k8s --> Jenkinsfile.bkp 
-
+    echo "this msg from nodejsEKS.grrovy --> call() method..."
     pipeline {
         agent {
             label 'AGENT-1'
