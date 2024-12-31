@@ -115,7 +115,7 @@ def call(Map configMap){    // call() will work like main() method in java
             stage('Verify Deployment'){
                 steps{
                     script{
-                        rollbackStatus = sh(script: "kubectl rollout status deployment/backend -n ${project} --timeout 1m || true", returnStdout: true).trim()
+                        rollbackStatus = sh(script: "kubectl rollout status deployment/backend -n ${project} --timeout=1m || true", returnStdout: true).trim()
                         if(rollbackStatus.contains('successfully rolled out')){
                             echo "Deployment is successfull"
                         }
