@@ -76,17 +76,29 @@ def call(Map configMap){    // call() will work like main() method in java
             }
             stage('Deploy'){
                 steps{
-                    sh """
-                        aws eks update-kubeconfig --region ${region} --name ${project}-dev
-                        cd helm
-                        sed -i 's/IMAGE_VERSION/${appVersion}/g' values.yaml
-                        
-                        helm install ${component} -n ${project} .
-                        # helm install frontend . ---> this can be used for the 1st time installing the frontend helm
-                        
-                        # helm upgrade ${component} -n ${project} .
-                        # helm upgrade backend .    -- this can be used after helm install - 2nd time onwards.
-                    """
+                    helm uninstall ${component}
+                    // script{
+                    //      releaseExists = sh(script: "helm list -A --short | grep -w ${component} || true", returnStdout: true).trim()
+                    //     if(releaseExists.isEmpty()){
+                    //         echo "${component} not installed yet, first time installation"
+                    //         sh """
+                    //             aws eks update-kubeconfig --region ${region} --name ${project}-dev
+                    //             cd helm
+                    //             sed -i 's/IMAGE_VERSION/${appVersion}/g' values.yaml
+                    //             helm install ${component} -n ${project} .
+                    //         """
+                    //     }
+                    //     else{
+                    //         echo "${component} exists, running upgrade"
+                    //         sh """
+                    //             aws eks update-kubeconfig --region ${region} --name ${project}-dev
+                    //             cd helm
+                    //             sed -i 's/IMAGE_VERSION/${appVersion}/g' values.yaml
+                    //             helm upgrade ${component} -n ${project} .
+                    //         """
+
+                    //     }
+                    // }
                 }
                 // sed -i 's/IMAGE_VERSION/${appVersion}/g' values.yaml ---> it will replace "IMAGE_VERSION" string with the value in {appVersion} inside values.yaml file.
                 // helm install backend . ---> use for the 1st time installation

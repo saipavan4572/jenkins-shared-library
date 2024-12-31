@@ -9,10 +9,10 @@ def decidePipeline(Map configMap) {
 
     switch(type) {
         case "nodejsEKS":
-            nodejsEKS(configMap)    //it will call the function call() inside nodejsEKS.groovy file.
+            nodejsEKS(configMap)    //by default it will call the function call() inside nodejsEKS.groovy file.
             break
         case "nodejsVM":
-            nodejsVM(configMap)
+            nodejsVM(configMap)     // if we mentioned any custom function then we can call that specific method like:nodejsVM.<methodname>
             break
         default:
             error "type is not matched"
