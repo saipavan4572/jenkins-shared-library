@@ -76,7 +76,13 @@ def call(Map configMap){    // call() will work like main() method in java
             }
             stage('Deploy'){
                 steps{
-                    helm uninstall ${component}
+                    sh """
+                                 aws eks update-kubeconfig --region ${region} --name ${project}-dev
+                                 cd helm
+                                 sed -i 's/IMAGE_VERSION/${appVersion}/g' values.yaml
+                                 helm uninstall ${component}
+                             """
+                    
                     // script{
                     //      releaseExists = sh(script: "helm list -A --short | grep -w ${component} || true", returnStdout: true).trim()
                     //     if(releaseExists.isEmpty()){
