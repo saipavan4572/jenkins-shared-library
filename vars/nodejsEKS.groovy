@@ -84,7 +84,7 @@ def call(Map configMap){    // call() will work like main() method in java
                         //      """
                     
                     script{
-                         releaseExists = sh(script: "helm list -A --short | grep -w ${component} || true", returnStdout: true).trim()
+                            releaseExists = sh(script: "helm list -A --short | grep -w ${component} || true", returnStdout: true).trim()
                         if(releaseExists.isEmpty()){
                             echo "${component} not installed yet, first time installation"
                             sh """
@@ -109,6 +109,38 @@ def call(Map configMap){    // call() will work like main() method in java
                 // sed -i 's/IMAGE_VERSION/${appVersion}/g' values.yaml ---> it will replace "IMAGE_VERSION" string with the value in {appVersion} inside values.yaml file.
                 // helm install backend . ---> use for the 1st time installation
                 // helm upgrade backend . ---> from the next installation onwards(after 1st installation)
+            }
+
+
+            stage('Verify Deployment'){
+                steps{
+                    script{
+                        rollbackStatus = sh(script: "kubectl rollout status deployment/backend -n ${project} --timeout=1m || true", returnStdout: true).trim()
+                        if(rollbackStatus.contains('successfully rolled out')){
+                            echo "Deployment is successfull"
+                        }
+                        else{
+                            echo "Deployment is failed, performing rollback"
+                            if(releaseExists.isEmpty()){
+                                error "Deployment failed, not able to rollback, since it is first time deployment"
+                            }
+                            else{
+                                sh """
+                                aws eks update-kubeconfig --region ${region} --name ${project}-dev
+                                helm rollback backend -n ${project} 0
+                                sleep 60
+                                """
+                                rollbackStatus = sh(script: "kubectl rollout status deployment/backend -n expense --timeout=2m || true", returnStdout: true).trim()
+                                if(rollbackStatus.contains('successfully rolled out')){
+                                    error "Deployment is failed, Rollback is successfull"
+                                }
+                                else{
+                                    error "Deployment is failed, Rollback is failed"
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
     /*         stage('Nexus Artifact Upload'){
