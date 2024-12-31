@@ -80,7 +80,7 @@ def call(Map configMap){    // call() will work like main() method in java
                                  aws eks update-kubeconfig --region ${region} --name ${project}-dev
                                  cd helm
                                  sed -i 's/IMAGE_VERSION/${appVersion}/g' values.yaml
-                                 helm uninstall ${component}
+                                 helm uninstall ${component} -n ${project}
                              """
                     
                     // script{
