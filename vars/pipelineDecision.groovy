@@ -2,7 +2,7 @@
 
 // declaring function
 
-def decidePipeline() {
+def decidePipeline(Map configMap) {
     type = configMap.get("type")
 
     echo "this msg from pipelineDecision.grrovy --> decidePipeline() method..."
