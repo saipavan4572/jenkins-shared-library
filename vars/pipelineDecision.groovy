@@ -7,7 +7,7 @@ def decidePipeline() {
 
     switch(type) {
         case "nodejsEKS":
-            nodejsEKS(configMap)
+            nodejsEKS(configMap)    //it will call the function call() inside nodejsEKS.groovy file.
         break
         case "nodejsVM":
             nodejsVM(configMap)
